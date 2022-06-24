@@ -1,225 +1,159 @@
 package calendar;
-
-import java.io.*;
-
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-/*
- * 5. Личен календар
-Да се напише компютърна програма, реализираща информационна система, 
-която поддържа личен календар. Програмата да поддържа текстов диалогов режим,
-позволяващ удобен интерактивен избор на следните операции:
-
-• запазване/отказване на час за среща. Записва се начало на среща (ден, час),
-край на среща, име (кратко описание - например "зъболекар”) и коментар
-• отпечатване на дневна програма, като по даден ден се извежда хронологичен
-списък с всички ангажименти за деня
-• промяна на часа и/или мястото на среща по име, като се запази 
-останалата информация за събитието
-• търсене на среща: по име се извеждат останалите данни се срещата
-• намиране на свободно място за среща: по дадена начална дата и
-желана продължителност на срещата търси дата, на която е възможно да се запази 
-такава среща, но само в работни дни и не преди 8 часа сутринта или след 5 часа вечерта.
-• намиране на свободно място за среща  по дадена начална дата, желана продължителност на 
-срещата търси дата за запазване на такава среща, но само в работни дни и не преди 
-8 часа сутринта или след 5 часа вечерта
-
-Пример:
-<< 1
-Въведете име на събитието:
-<< Лекция по Java
-Въведете дата на събитието:
-<< 17.06.2021г
-Въведете начален час:
-<< 18:00ч
-Въведете крайния час:
-<< 20:00ч
-Въведете бележки:
-<< На тази лекция ще има проектна задача
-Събитието беше създадено успешно!
-
-Моля, изберете какво да правите (1 - Създаване на събитие | 2 - Дневен график | 3 - Търсене на събитие | 4 - Намерете наличност)
-<< 2
-Въведете дата:
-<< 10.06.2021г
-• 8:00 - 9:00 Спорт: бягане
-• 10:30 - 11:00 Ежедневна среща на екипа
-• 12:00 - 13:00 Обедна почивка: в Пица Милеви
-• 16:00 - 17:00 Техническо планиране: планиране на пускането на следващите функции
-
-Моля, изберете какво да правите (1 - Създайте събитие |
-2 - Дневен график | 3 - Търсене на събитие | 4 - Намерете наличност)
-<< 3
-Въведете заглавие на събитието:
-<<Зъболекар
-25.05.2021 15:30 - 16:30 При зъболекар: Оправям ми зъбите с кариес
-Искате ли да отмените или редактирате събитие (1 - Отказ |
-2 - Редактиране | натиснете всеки друг клавиш, за да продължите)
-<< 1
-Сигурни ли сте, че искате да отмените събитието 25.05.2021 15:30 - 16:30
-При зъболекаря: Оправям си зъбите с кариес? (Да / Да)
-<< Да
-Събитието беше отменено
-
-Моля, изберете какво да правите (1 - Създайте събитие |
-2 - Дневен график | 3 - Търсене на събитие | 4 - Намерете наличност)
-<<4
-Въведете дата:
-<< 20.06.2020г
-От време:
-<< 13:00ч
-Въведете продължителност:
-<< 2
-Свободен слот за събитието: 20.06.2020 14:30ч
-*/
-
 public class Calendar {
-	// избор на опция
-	public static void chooseEvent(int a) throws IOException {
 
-		switch (a) {
-		case 1:
-			createEvent(null);
-			break;
-		case 2:
-			removeEvent();
-			break;
-		case 3:
-			arhiveEvent();
-			break;
-		}
-	} 
-	
-	
-    
-	
-	public static void enterName() throws FileNotFoundException {
-		File file = new File("arhive.txt");
-		PrintWriter pw = new PrintWriter(file);
-		pw.println("Nomer");
-		pw.close();
-	}
-	
-	public static void enterDate() {
-		
-	}
-	
-	public static void enterStartTime() {
-		
-	}
-	
-	public static void enterEndTine() {
-		
-	}
-	
-		//Описание на събитието
-	public static void enterDescription() {
-		System.out.println("Въведете описание: ");
+	public static void optionEvent() {
 		Scanner sc = new Scanner(System.in);
-		
-		BufferedReader br = null;
-		try {
-			File file = new File("arhive.txt");
-			if (!file.exists())
-				file.createNewFile();
-			PrintWriter pw = new PrintWriter(file);			
-			pw.println(sc.next());
-			pw.println("Резервация");			
-			pw.close();
-			sc.close();
-			
-			br = new BufferedReader(new FileReader("arhive.txt"));
-			String line;
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch (IOException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				System.out.println("error: " + e);
-			}
-			
+		System.out.println("\nИзбери начин на създаване:\n1 Създай със String\n2 Създай с ArrayList");
+
+		int a = sc.nextInt();
+		if (a == 1) {
+			createString();
+		} else if (a == 2) {
+			createArray();
+		} else {
+			System.err.println("\nТакава опция не съществува?\nОпитай пак:\n");
 		}
 	}
-	
-	// създаване на събитие
-	public static void createEvent(PrintWriter pw) {
+
+	public static void eventOption() {
+		Scanner sc = new Scanner(System.in);
+		System.out
+				.println("Намери събитие по дата: \n20 " + "За събитие на 20.08.2022г.\n26 За събитие на 26.08.2022г.");
+		int b = sc.nextInt();
+		switch (b) {
+		case 20:
+			readyEvent();
+			break;
+		case 26:
+			newEvent();
+			break;
+		default:
+			System.err.println("\nТакава опция не съществува?\nОпитай пак:\n");
+		}
+	}
+
+	public static void chooseEvent(int a) {
+		if (a == 1) {
+			System.out.println("Моля създайте събитие: ");
+			optionEvent();
+		} else if (a == 2) {
+			listEvent();
+		} else if (a == 3) {
+			eventOption();
+		} else if (a == 4) {
+			availableEvent();
+		}
+	}
+
+	public static void availableEvent() {
+		readyEvent();
+		newEvent();
+	}
+
+	public static void createString() {
+
+		Scanner sc = new Scanner(System.in);
+
 		System.out.println("Въведете име: ");
+		String name = (sc.nextLine());
+
+		System.out.println("Въведете дата: ");
+		String date = (sc.nextLine());
+
+		System.out.println("Въведете начален час: ");
+		String start = (sc.nextLine());
+
+		System.out.println("Въведете краен час: ");
+		String end = (sc.nextLine());
+
+		System.out.println("Въведете описание: ");
+		String descript = (sc.nextLine());
+
+		String result = ("\nИме: " + name + "\nДата: " + date + "\nОт " + start + " до " + end + "\n" + "Описание: "
+				+ descript + "\n");
+		System.out.println(result);
+	}
+
+	public static void readyEvent() {
+		ArrayList<String> event = new ArrayList<String>();
+		event.add("\nИме: Банка 'ДСК'");
+		event.add("Дата: 20.08.2022г.");
+		event.add("Начало от: 09.00ч.");
+		event.add("Край: до 10.00ч.");
+		event.add("Информация за кредит\n");
+		for (String i : event) {
+			System.out.println(i);
+		}
+	}
+
+	public static void newEvent() {
+		String name = "Дигитално общество";
+		String date = "26.08.2022г";
+		String start = "13.00ч.";
+		String end = "14.00ч.";
+		String descript = "Записване за курс";
+		String result = ("\nИме: " + name + "\nДата: " + date + "\nНачало От: " + start + "\nКрай до: " + end + "\n"
+				+ "Описание: " + descript + "\n");
+		System.out.println(result);
+	}
+
+	public static void listEvent() {
+		System.out.println("\n===Програма за деня:===");
+		ArrayList<String> event = new ArrayList<String>();
+		event.add("От 08.00ч. до 09.00ч. 'Среща с екипа'");
+		event.add("От 11.00ч. до 12.00ч. 'Прием на клиент'");
+		event.add("От 14.00ч. до 15.00ч. 'Преинсталация на компютър'");
+		event.add("От 16.00ч. до 17.00ч. 'Обновяване на сайта'");
+		event.add("От 19/00ч. до 21.00ч. 'Вечеря на открито'\n");
+		for (String i : event) {
+			System.out.println(i);
+		}
+
+	}
+
+	public static void createArray() {
+
 		Scanner sc = new Scanner(System.in);
-		
-		BufferedReader br = null;
-		try {
 
-			File file = new File("arhive.txt");
-
-			if (!file.exists())
-				file.createNewFile();
-
-			pw = new PrintWriter(file);
-			//PrintWriter cc = new PrintWriter(file);
-			//InputStreamReader reader = new InputStreamReader(System.in);
-			//pw = (char) ((InputStream) pw).read();
-			//sc.nextLine();
-			
-			pw.println(sc.next());
-			pw.println("Резервация");
-			
-			pw.close();
-			sc.close();
-			
-			br = new BufferedReader(new FileReader("arhive.txt"));
-			String line;
-			while ((line = br.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch (IOException e) {
-			System.out.println("error: " + e);
-		} finally {
-			try {
-				br.close();
-			} catch (IOException e) {
-				System.out.println("error: " + e);
-			}
-			
+		ArrayList<String> event = new ArrayList<String>();
+		System.out.println("Въведете име: ");
+		event.add(sc.nextLine());
+		System.out.println("Въведете дата: ");
+		event.add(sc.nextLine());
+		System.out.println("Въведете начален час: ");
+		event.add(sc.nextLine());
+		System.out.println("Въведете краен час: ");
+		event.add(sc.nextLine());
+		System.out.println("Въведете описание: ");
+		event.add(sc.nextLine());
+		System.out.println();
+		for (String i : event) {
+			System.out.println(i);
 		}
+		System.out.println();
 	}
 
-	// премахване на събитие
-	public static void removeEvent() {
+	public static void main(String[] args) throws SQLException {
+		Scanner sc = new Scanner(System.in);
 
-	}
+		while (true) {
+			System.out.println("  ---МОЯТ КАЛЕНДАР---");
+			System.out.println("  --Изберете опция:--\n1 За създаване на събитие:\n"
+					+ "2 Дневен график:\n3 Търсене на събитие:\n4 Намерете наличност:\n5 Изход");
 
-	// създадени събития
-	public static void arhiveEvent() throws IOException {
-		BufferedReader br = null;
-		br = new BufferedReader(new FileReader("arhive.txt"));
-		String line;
-		while ((line = br.readLine()) != null) {
-			System.out.println(line);
+			int command = sc.nextInt();
+
+			if (command == 1 || command == 2 || command == 3 || command == 4) {
+				chooseEvent(command);
+			} else if (command == 5) {
+				System.exit(0);
+			} else {
+				System.err.println("\nТакава опция не съществува?\nОпитай пак:\n");
+			}
 		}
-		br.close();
-		
-	}
-
-	public static void main(String[] args) throws IOException {
-		
-			
-			  System.out.println("---МОЯТ КАЛЕНДАР---"); 
-			  Scanner sc = new Scanner(System.in);
-			  System.out.println("--Изберете опция:--\nЗа създаване на събитие:  1  \n" +
-			  "За премахване на събитие: 2  \nВашите създадени събития: 3");
-			  
-			  int event = sc.nextInt(); 
-			  if (event == 1 || event == 2 || event == 3) {
-			  chooseEvent(event); 
-			  } else {
-			  System.out.println("Такава опция не съществува?\nОпитай пак:");
-			  System.out.println(); 
-			  main(args); 
-			  } sc.close();
-			 
 	}
 }
